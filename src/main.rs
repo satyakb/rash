@@ -1,4 +1,5 @@
 use std::io::{self, Write};
+use std::process::Command;
 
 fn main() {
     loop {
@@ -11,7 +12,22 @@ fn main() {
                 panic!("error: {}", e);
             },
             Ok(_) => {
-                print!("{}", buf);
+                buf.pop(); // Remove last newline
+
+                let mut split : Vec<&str> = buf.split(" ").collect();
+                let com = split.remove(0);
+
+                let output = Command::new(com)
+                                    .args(split.as_slice())
+                                    .output();
+                match output {
+                    Ok(o) => {
+                        print!("{}", String::from_utf8_lossy(&o.stdout));
+                    },
+                    Err(e) => {
+                        println!("Error: {}", e);
+                    },
+                }
             }
         }
     }
