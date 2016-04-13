@@ -1,5 +1,6 @@
 use std::io::{self, Write};
 use std::process::Command;
+use std::process::Stdio;
 
 fn main() {
     loop {
@@ -19,6 +20,9 @@ fn main() {
 
                 let output = Command::new(com)
                                     .args(split.as_slice())
+                                    .stdout(Stdio::inherit())
+                                    //.stderr(Stdio::inherit())
+                                    .stdin(Stdio::inherit())
                                     .output();
                 match output {
                     Ok(o) => {
