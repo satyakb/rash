@@ -1,35 +1,31 @@
 use std::io::{self, Write};
 use std::process::Command;
-use std::process::Stdio;
+
+pub const PROMPT: &'static str = "$ ";
 
 fn main() {
     loop {
-        print!("> ");
+        print!("{}", PROMPT);
         io::stdout().flush().unwrap();
 
         let mut buf = String::new();
         match io::stdin().read_line(&mut buf) {
             Err(e) => {
-                panic!("error: {}", e);
+                panic!("rash: error: {}", e);
             },
             Ok(_) => {
-                buf.pop(); // Remove last newline
+                buf.pop(); // Remove ending newline
 
                 let mut split : Vec<&str> = buf.split(" ").collect();
                 let com = split.remove(0);
 
-                let output = Command::new(com)
+                let status = Command::new(com)
                                     .args(split.as_slice())
-                                    .stdout(Stdio::inherit())
-                                    //.stderr(Stdio::inherit())
-                                    .stdin(Stdio::inherit())
-                                    .output();
-                match output {
-                    Ok(o) => {
-                        print!("{}", String::from_utf8_lossy(&o.stdout));
-                    },
-                    Err(e) => {
-                        println!("Error: {}", e);
+                                    .status();
+                match status {
+                    Ok(_) => (),
+                    Err(_) => {
+                        println!("rash: command not found: {}", com);
                     },
                 }
             }
