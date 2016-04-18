@@ -3,6 +3,10 @@ use std::process::Command;
 
 pub const PROMPT: &'static str = "$ ";
 
+macro_rules! perror {
+    ($e:tt) => {println!("rash: {}", $e)};
+}
+
 fn main() {
     loop {
         print!("{}", PROMPT);
@@ -11,7 +15,8 @@ fn main() {
         let mut buf = String::new();
         match io::stdin().read_line(&mut buf) {
             Err(e) => {
-                panic!("rash: error: {}", e);
+                perror!(e);
+                return
             },
             Ok(_) => {
                 buf.pop(); // Remove ending newline
@@ -24,8 +29,8 @@ fn main() {
                                     .status();
                 match status {
                     Ok(_) => (),
-                    Err(_) => {
-                        println!("rash: command not found: {}", com);
+                    Err(e) => {
+                        perror!(e);
                     },
                 }
             }
